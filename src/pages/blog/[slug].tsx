@@ -8,6 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { useShare } from "@/hooks";
 import { allPosts } from "contentlayer/generated";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,6 +22,13 @@ export default function PostPage() {
   )!;
 
   const publishedDate = new Date(post?.date).toLocaleDateString("pt-BR");
+  const postUrl = `https://site.set/blog/${slug}`;
+
+  const { shareButtons } = useShare({
+    url: postUrl,
+    title: post?.title,
+    text: post?.description,
+  });
 
   return (
     <main className="mt-32 text-gray-100">
@@ -78,14 +86,20 @@ export default function PostPage() {
           </article>
 
           <aside className="space-y-6">
-            <div className="rounded-lg bg-gray-700 p-4 md:p-6">
+            <div className="rounded-lg bg-gray-700">
               <h2 className="mb-4 text-heading-xs text-gray-100">
                 Compartilhar
               </h2>
               <div className="space-y-6">
-                {[{ key: "1", providerName: "LinkedIn" }].map((provider) => (
-                  <Button key={provider.key} variant="outline">
-                    {provider.providerName}
+                {shareButtons.map((provider) => (
+                  <Button
+                    key={provider.provider}
+                    variant="outline"
+                    className="w-full justify-start gap-2"
+                    onClick={() => provider.action()}
+                  >
+                    {provider.icon}
+                    {provider.name}
                   </Button>
                 ))}
               </div>
